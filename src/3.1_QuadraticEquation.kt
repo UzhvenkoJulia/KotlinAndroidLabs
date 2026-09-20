@@ -1,23 +1,30 @@
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-// ---додаткове завдання: sealed interface для представлення різних типів коренів---
-
+// sealed interface для представлення різних типів коренів
 sealed interface Roots {
     data class TwoRoots(val x1: Double, val x2: Double) : Roots
     data class OneRoot(val x: Double) : Roots
     object NoRealRoots : Roots
 }
 
-class QuadraticEquation(val a: Double, val b: Double, val c: Double) {  // спрацьовує одразу при створенні об'єкта
+class QuadraticEquation(
+    aVal: Double,
+    var b: Double,
+    var c: Double
+) {
+    var a: Double = aVal
+        set(value) {
+            require(value != 0.0) { "коефіцієнт a не може бути 0" }
+            field = value
+        }
 
     init {
         require(a != 0.0) { "коефіцієнт a не може бути 0" }
     }
 
-    constructor(a: Int, b: Int, c: Int) : this(a.toDouble(), b.toDouble(), c.toDouble())  // для цілочисельних значень, ще Double є
-
-    constructor(b: Double, c: Double) : this(1.0, b, c)  // a = 1.0
+    constructor(a: Int, b: Int, c: Int) : this(a.toDouble(), b.toDouble(), c.toDouble())
+    constructor(b: Double, c: Double) : this(1.0, b, c)
 
     val discriminant: Double
         get() = b * b - 4 * a * c
@@ -34,7 +41,6 @@ class QuadraticEquation(val a: Double, val b: Double, val c: Double) {  // сп�
         }
     }
 
-    // sealed interface Roots
     fun solveAsRoots(): Roots {
         val d = discriminant
         return when {
@@ -60,7 +66,14 @@ fun main() {
     println("р-ня 1: $eq1 | дискримінанта: ${eq1.discriminant} | корені: ${eq1.solve()}")
     println("р-ня 2: $eq2 | дискримінанта: ${eq2.discriminant} | корені: ${eq2.solve()}")
 
-    // уникаю a == 0 за допомогою генерації ненульового а через цикл або доки а != 0
+    println("\nзміна коефіцієнтів")
+    val mutableEq = QuadraticEquation(1.0, -3.0, 2.0)
+    println("початкове р-ня: $mutableEq | дискримінанта: ${mutableEq.discriminant}")
+
+    mutableEq.a = 2.0
+    mutableEq.b = -5.0
+    println("після зміни (a=2.0, b=-5.0): $mutableEq | новий дискримінанта: ${mutableEq.discriminant}")
+
     val equations = List(100) {
         var randomA = 0.0
         while (randomA == 0.0) {
@@ -71,14 +84,15 @@ fun main() {
         QuadraticEquation(randomA, randomB, randomC)
     }
 
-    val twoRootEquations = equations.filter { it.discriminant > 0.0 }  // рівно 2 розв'язки (D > 0)
+    val twoRootEquations = equations.filter { it.discriminant > 0.0 }
 
     println("\nр-ня з двома коренями (знайдено: ${twoRootEquations.size})")
+
     twoRootEquations.forEach { eq ->
         println("р-ня: $eq -> корені: ${eq.solve()}")
     }
 
-    println("\nsealed interface(Roots)")
+    println("\nsealed interface (Roots)")
     val sampleEq = QuadraticEquation(1.0, 0.0, -4.0)
     when (val result = sampleEq.solveAsRoots()) {
         is Roots.TwoRoots -> println("знайдено два корені: x1 = ${result.x1}, x2 = ${result.x2}")
