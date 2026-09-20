@@ -19,7 +19,7 @@ val clientList = listOf(
     Client(4, "Дмитро", null, Address("вул. Соборна, 1", null, null), "Очікує дзвінка")
 )
 
-// 1.
+// 1
 fun getShippingLabel(client: Client): String {
     val address = client.address ?: return "самовивіз: клієнт ${client.name} не надав адреси"
     val city = address.city ?: "місто не написано"
@@ -27,20 +27,19 @@ fun getShippingLabel(client: Client): String {
     return "адреса ${client.name}: ${address.street}, $city, $zip"
 }
 
-// 2.
+// 2
 fun printClientNote(client: Client) {
     val note = client.extraData as? String ?: "додаткові примітки відсутні"
     println("клієнт ${client.name} -> $note")
 }
 
-// 4.
+// 4
 fun getClientEmailOrThrow(client: Client): String {
     return client.email ?: throw IllegalArgumentException("клієнт з ID ${client.id} не має ел.пошти")
 }
 
-// 5.
+// 5
 fun forceGetPostalCode(client: Client): String {
-    // !! - на 100% певна я, що значення не null
     return client.address!!.postalCode!!
 }
 
@@ -62,7 +61,7 @@ fun main() {
     println("\n4")
     try {
         getClientEmailOrThrow(clientList[1])
-    } catch (e: Exception) {
+    } catch (e: IllegalArgumentException) {
         println("перехоплено виняток: ${e.message}")
     }
 
